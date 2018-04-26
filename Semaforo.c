@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+int o = 0;
+ int s = 1;
+struct ARG{
+	
+	int variavel;	
+
+};
+
+pthread_mutex_t lock;
+
+
+void wait(){
+	
+	while(s <= 0);
+
+	s--;
+}
+
+void signal(){
+
+	s++;
+
+}
+
+
+void *funcao(void *parametro){
+	
+	int  l;
+	struct ARG *arg = (struct ARG *)parametro;
+
+	l = arg->variavel;
+
+	wait();
+	for(int i = 0; i<l; i++){
+
+	o++;
+
+	}
+	signal();
+
+	pthread_exit(0);
+
+
+}
+
+void main(int argc[], char *argv[]){
+
+	pthread_t nomet[5];
+
+	pthread_attr_t attr[5];
+
+	struct ARG recebe[5];
+
+	for(int i = 0; i<5; i++){
+
+	recebe[i].variavel = atoi(argv[1]);
+
+	pthread_attr_init(&attr[i]);
+
+	pthread_create(&nomet[i],&attr[i],funcao,&recebe[i]);
+	}
+
+	for(int i = 0; i<5; i++){
+
+	pthread_join(nomet[i], NULL);
+}
+	printf("%d", o);
+}
